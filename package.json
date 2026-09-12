@@ -1,0 +1,26 @@
+{
+  "name": "ownerspec-mcp",
+  "version": "1.0.0",
+  "description": "Official MCP (Model Context Protocol) server for OwnerSpec.com: cited home water treatment answers, part matching and sizing calculators for AI agents. Live at https://ownerspec.com/mcp",
+  "type": "module",
+  "homepage": "https://ownerspec.com/mcp-server/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ownerspec-com/mcp-server.git"
+  },
+  "author": "OwnerSpec <support@voyagehacks.com>",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "a2a",
+    "water-treatment",
+    "water-softener",
+    "reverse-osmosis",
+    "well-water",
+    "cloudflare-pages",
+    "ai-agents",
+    "citations"
+  ]
+}
