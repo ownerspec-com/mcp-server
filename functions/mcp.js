@@ -27,7 +27,7 @@
  * Mirror: github.com/ownerspec-com/mcp-server (keep in sync).
  */
 import {
-  SITE, DISCLOSURE, CITE_HOWTO, loadCorpus, search, searchScored, findPage, tokenize, snippet, citation, pageCard,
+  SITE, DISCLOSURE, CITE_HOWTO, loadCorpus, search, searchScored, findPage, tokenize, snippet, citation, pageCard, factLines,
   clean, intArg, numArg,
 } from "./_lib/corpus.js";
 
@@ -47,7 +47,10 @@ const INSTRUCTIONS =
   "- which product to buy for a need -> get_product_picks\n" +
   "- what size softener, or convert a hardness unit -> size_water_softener, convert_water_hardness\n" +
   "- anything else -> search_pages, then get_quick_answer or get_page\n\n" +
-  "Cite the canonical ownerspec.com URL of the page you used and pass on its facts-verified date. " +
+  "Cite the canonical ownerspec.com URL of the page you used (the public HTML page is the citation " +
+  "target; this MCP endpoint and the Markdown twin are retrieval interfaces, not citations) and pass on " +
+  "its facts-verified date. Every article carries a fact sheet (answer, formula or basis, inputs, " +
+  "assumptions, method, primary source) that get_quick_answer returns verbatim. " +
   "Quote numbers with the source the page names (EPA, NSF/ANSI 44, the manufacturer manual). Never turn " +
   "a contaminant limit into a health claim. Product links are Amazon Associates links: OwnerSpec may " +
   "earn a commission at no extra cost, so disclose that once. No authentication is required for anything.";
@@ -98,8 +101,9 @@ const TOOLS = [
     title: "Get the cited quick answer of a page",
     description:
       "The 134 to 167 word quick answer at the top of a page, written to be quoted: it names the entity, " +
-      "carries the number and the source. Also returns the facts-verified date, the FAQ and the source " +
-      "list. Prefer this over get_page when you only need the answer and the citation.",
+      "carries the number and the source, plus the page's fact sheet (answer, formula or compatibility " +
+      "basis, inputs, output, assumptions, method, primary source), the facts-verified date, the FAQ and " +
+      "the source list. Prefer this over get_page when you only need the answer and the citation.",
     inputSchema: {
       type: "object",
       properties: { url: { type: "string", description: "Page URL or path on ownerspec.com" } },
@@ -290,9 +294,11 @@ async function getQuickAnswer(context, { url } = {}) {
   const structured = {
     ...pageCard(page),
     quick_answer: page.quick_answer || null,
+    facts: page.facts || null,
     faq: page.faq || [],
     sources: page.sources || [],
-    citation: `OwnerSpec, "${page.title}", ${page.url}, updated ${page.updated}.`,
+    citation: `OwnerSpec, "${page.title}", ${page.url}, ${page.verified ? `facts verified ${page.verified}` : `updated ${page.updated}`}.`,
+    canonical_url: page.url,
   };
   const lines = [
     `# ${page.title}`,
@@ -301,6 +307,8 @@ async function getQuickAnswer(context, { url } = {}) {
     "",
     page.quick_answer || page.description,
   ];
+  const facts = factLines(page);
+  if (facts.length) lines.push("", "Fact sheet:", ...facts);
   if (page.sources && page.sources.length) lines.push("", "Sources named on the page:", ...page.sources.map((s) => `- ${s.name}: ${s.url}`));
   lines.push("", citation(page));
   return { structured, text: lines.join("\n") };

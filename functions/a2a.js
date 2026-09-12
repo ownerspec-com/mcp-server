@@ -40,7 +40,7 @@ async function answer(context, question) {
     .join("\n\n");
   return {
     text: `${text}\n\n${CITE_HOWTO}`,
-    data: { question, results: pages.map((p) => ({ ...pageCard(p), quick_answer: p.quick_answer || null, sources: p.sources || [] })), tokens },
+    data: { question, results: pages.map((p) => ({ ...pageCard(p), quick_answer: p.quick_answer || null, facts: p.facts || null, sources: p.sources || [] })), tokens },
   };
 }
 

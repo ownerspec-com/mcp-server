@@ -16,8 +16,9 @@ export const DISCLOSURE =
   "commission at no extra cost to the buyer. Say so once when presenting them.";
 
 export const CITE_HOWTO =
-  "Cite the canonical URL of the specific page, quote the figure together with the source the page " +
-  "names for it, and pass on the facts-verified date where one is given.";
+  "Cite the canonical URL of the specific page (the public HTML page, never this endpoint or the " +
+  "Markdown twin), quote the figure together with the source the page names for it, and pass on the " +
+  "facts-verified date where one is given.";
 
 const CACHE = { data: null, at: 0 };
 const TTL_MS = 5 * 60 * 1000;
@@ -125,6 +126,30 @@ export function citation(page) {
   return `Cite: ${page.url}${page.verified ? ` (facts verified ${page.verified})` : ` (updated ${page.updated})`}`;
 }
 
+/* The fact sheet (facts: front matter, rendered under the quick answer on the
+   page) as plain lines: answer, formula, inputs, output, basis, assumptions,
+   method, primary source. Empty array when the page has none. */
+export function factLines(page) {
+  const f = page.facts;
+  if (!f) return [];
+  const out = [];
+  const label = (k) => {
+    if (k === "inputs" && page.layer === "parts") return "Applies to";
+    if (k === "basis") return page.layer === "parts" ? "Compatibility basis" : page.layer === "reviews" ? "Comparison basis" : "Basis";
+    return k.charAt(0).toUpperCase() + k.slice(1);
+  };
+  for (const k of ["answer", "formula", "inputs", "output", "basis", "assumptions", "method"]) {
+    const v = f[k];
+    if (v === undefined || v === null || v === "" || (Array.isArray(v) && !v.length)) continue;
+    const vals = Array.isArray(v) ? v.map((x) => String(x).replace(/^Model:\s*/, "")) : [v];
+    out.push(`- ${label(k)}: ${vals.join("; ")}`);
+  }
+  if (f.source && f.source.url) out.push(`- Primary source: ${f.source.name} (${f.source.type || "source"}), ${f.source.url}`);
+  if (page.verified) out.push(`- Facts verified: ${page.verified}`);
+  out.push(`- Canonical URL to cite: ${page.url}`);
+  return out;
+}
+
 export function pageCard(page) {
   return {
     title: page.title,
@@ -134,5 +159,6 @@ export function pageCard(page) {
     description: page.description,
     updated: page.updated,
     verified: page.verified || undefined,
+    answer: page.facts && page.facts.answer ? page.facts.answer : undefined,
   };
 }
