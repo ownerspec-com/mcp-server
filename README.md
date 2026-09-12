@@ -38,7 +38,7 @@ npx @modelcontextprotocol/inspector https://ownerspec.com/mcp
 | --- | --- |
 | `search_pages` | Full-text search over every page, filterable by layer (guides, calculators, parts, reviews) and topic |
 | `get_page` | Fetch one page as clean Markdown with canonical URL, dates and sources |
-| `get_quick_answer` | The page's cited 134 to 167 word quick answer, verified date, FAQ and source list: the passage to quote |
+| `get_quick_answer` | The page's cited 134 to 167 word quick answer, its fact sheet (answer, formula or compatibility basis, inputs, assumptions, method, typed primary source), verified date, FAQ and typed source list: the passage to quote |
 | `diagnose_water_problem` | Symptom or lab result in, the matching diagnosis guides and their quick answers out |
 | `find_replacement_part` | Model or part number in, the cartridges, lamps or parts that fit out, with product links |
 | `get_product_picks` | The picks from the review and parts pages that match a need, with Amazon product links |
