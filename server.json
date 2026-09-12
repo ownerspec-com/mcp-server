@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.ownerspec/mcp",
+  "title": "OwnerSpec",
+  "description": "Cited home water treatment answers, part matching and sizing calculators for AI agents.",
+  "version": "1.0.0",
+  "websiteUrl": "https://ownerspec.com/mcp-server/",
+  "repository": { "url": "https://github.com/ownerspec-com/mcp-server", "source": "github" },
+  "remotes": [{ "type": "streamable-http", "url": "https://ownerspec.com/mcp" }]
+}
