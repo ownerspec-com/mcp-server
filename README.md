@@ -2,10 +2,12 @@
 
 The official [Model Context Protocol](https://modelcontextprotocol.io) server for
 [OwnerSpec.com](https://ownerspec.com), an independent, numbers-first reference for the
-equipment people own and maintain at home. First vertical: home water treatment (softeners,
-sediment and carbon filters, reverse osmosis, UV, iron, hardness, sulfur smell, well water
-testing). Every figure on the site is cited to EPA, NSF/ANSI, WQA, a state extension service
-or the manufacturer's own document, and every page carries the date its facts were verified.
+equipment people own and maintain at home, in three categories: home water treatment
+(softeners, sediment and carbon filters, reverse osmosis, UV, iron, hardness, sulfur smell, well
+water testing), home plumbing (water heaters, leaks, freeze protection, toilets, faucets, sump
+pumps, dehumidifiers) and home air (air purifiers and CADR, humidifiers, furnace filters and
+MERV). Every figure on the site is cited to EPA, NSF/ANSI, WQA, DOE, AHAM, a state extension
+service or the manufacturer's own document, and every page carries the date its facts were verified.
 
 **Live endpoint:** `https://ownerspec.com/mcp`
 
