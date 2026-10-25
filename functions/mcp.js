@@ -476,7 +476,12 @@ async function troubleshootHomeEquipment(context, { problem, limit } = {}) {
   const corpus = await loadCorpus(context);
   /* Plumbing and air guides first: water symptoms have their own tool. */
   const found = search(corpus, problem, { layer: "guides", limit: limit * 3 });
-  const guides = [...found.filter((g) => g.category !== "water"), ...found.filter((g) => g.category === "water")].slice(0, limit);
+  /* The equipment named in the question decides first: "smoke alarm chirps" must not
+     open on the CO guide just because that page mentions chirps more often. */
+  const tokens = tokenize(problem);
+  const inTitle = (g) => tokens.filter((t) => g.title.toLowerCase().includes(t)).length;
+  const ranked = found.filter((g) => !g.path.includes("deal-check")).map((g, i) => ({ g, i, t: inTitle(g) })).sort((a, b) => b.t - a.t || a.i - b.i).map((x) => x.g);
+  const guides = [...ranked.filter((g) => g.category !== "water"), ...ranked.filter((g) => g.category === "water")].slice(0, limit);
   if (!guides.length) {
     return { structured: { view: "guides", problem, guides: [] }, text: `No OwnerSpec guide matched "${problem}". Name the equipment, the brand and what it does (beeps, leaks, pops, will not start).` };
   }
