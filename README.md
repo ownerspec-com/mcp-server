@@ -41,15 +41,32 @@ npx @modelcontextprotocol/inspector https://ownerspec.com/mcp
 | `search_pages` | Full-text search over every page, filterable by layer (guides, calculators, parts, reviews) and topic |
 | `get_page` | Fetch one page as clean Markdown with canonical URL, dates and sources |
 | `get_quick_answer` | The page's cited 134 to 167 word quick answer, its fact sheet (answer, formula or compatibility basis, inputs, assumptions, method, typed primary source), verified date, FAQ and typed source list: the passage to quote |
+| `read_water_report` | Lab, test-kit or utility results in, each compared with the EPA limit on OwnerSpec's EPA table, with unit conversion and the guide to read |
 | `diagnose_water_problem` | Symptom or lab result in, the matching diagnosis guides and their quick answers out |
-| `find_replacement_part` | Model or part number in, the cartridges, lamps or parts that fit out, with product links |
-| `get_product_picks` | The picks from the review and parts pages that match a need, with Amazon product links |
+| `troubleshoot_home_equipment` | A beeping alarm, a popping water heater, a pump that will not start: the guides that explain it |
+| `find_replacement_part` | Model or part number in, the cartridges, lamps or parts that fit out, with the cross-reference page |
+| `get_product_picks` | The picks from the review and parts pages that match a need, with the review page that compares them |
+| `list_calculators` | Every OwnerSpec calculator with its id and input fields |
+| `run_calculator` | One calculator prefilled with the user's numbers: the page's live calculator in apps, the formula in text |
 | `convert_water_hardness` | gpg, mg/L, dH, fH, Clark and mmol/L, with the USGS band |
 | `size_water_softener` | Grain capacity between regenerations, nearest nominal size and the salt-efficient Fleck 5600SXT row |
+| `plan_home_maintenance` | A dated maintenance schedule, each interval quoted from the maker or body that prints it |
 
-Every answer ends with the URL to cite and the facts-verified date. The two calculator tools
-use the same constants as the calculator pages on the site, and the site's build fails if
-either side drifts.
+All tools are read-only and annotated `readOnlyHint: true`, `destructiveHint: false`.
+
+## MCP App
+
+In hosts that support [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview)
+(`io.modelcontextprotocol/ui`), eight tools render an interactive view: the live calculator
+with the user's numbers, a flagged water report table, a dated maintenance plan, and cards for
+guides, parts and picks. The view (`functions/_lib/widget.js`, served as
+`ui://ownerspec/view-v1.html`) is one self-contained HTML document with a hand-written
+`postMessage` bridge, no SDK and no third-party origin. Calculators run the site page's own
+form and script, taken from `/index.json`, so the in-chat answer is the page's answer.
+
+Every answer ends with the URL to cite and the facts-verified date. The two ported calculator
+tools use the same constants as the calculator pages on the site, `run_calculator` runs the
+page's own code, and the site's build fails if either side drifts.
 
 The server also exposes resources (`llms.txt`, `llms-full.txt`, the sitemap, the search
 index, the OpenAPI description, `auth.md`) and one prompt, `answer_from_ownerspec`.
@@ -78,16 +95,17 @@ The whole site is agent-readable, not just this server:
 
 ## Transparency
 
-OwnerSpec is an affiliate-funded site. Product links returned by `find_replacement_part` and
-`get_product_picks` are Amazon Associates links; every response that carries one ships a
-`disclosure` field saying so, and the tool descriptions say it plainly. Editorial content is
-free to read, with no paywall and no auth. The site makes no medical claims and neither do
-the tools: contaminant figures are quoted as EPA, WHO or state limits.
+OwnerSpec is an affiliate-funded site, but this server returns no product links, no prices
+and no ads: picks come back with the OwnerSpec review page that compares them, and the
+affiliate links and their disclosure live on that page. Editorial content is free to read,
+with no paywall and no auth. The site makes no medical claims and neither do the tools:
+contaminant figures are quoted as EPA, WHO or state limits. Privacy:
+[ownerspec.com/legal/privacy](https://ownerspec.com/legal/privacy/) (section 2.5).
 
 ## Self-hosting
 
 This is a Cloudflare Pages Function (`functions/mcp.js`, `functions/a2a.js`, shared code in
-`functions/_lib/corpus.js`). To run your own instance:
+`functions/_lib/`). To run your own instance:
 
 1. Deploy the `functions/` directory with a Cloudflare Pages project in front of a static site.
 2. The server reads its content live from the site it fronts: a build that emits `/index.json`
